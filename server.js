@@ -129,8 +129,9 @@ const sessions = new Map()
 const SESSION_COOKIE_NAME = "md_sid"
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000
 const SESSION_CLEANUP_MS = 60 * 60 * 1000
-const UPSTASH_REDIS_REST_URL = String(process.env.UPSTASH_REDIS_REST_URL || "").trim().replace(/\/+$/, "")
-const UPSTASH_REDIS_REST_TOKEN = String(process.env.UPSTASH_REDIS_REST_TOKEN || "").trim()
+//the Vercel Marketplace Upstash integration names these KV_REST_API_URL / KV_REST_API_TOKEN
+const UPSTASH_REDIS_REST_URL = String(process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || "").trim().replace(/\/+$/, "")
+const UPSTASH_REDIS_REST_TOKEN = String(process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || "").trim()
 const HAS_UPSTASH = !!(UPSTASH_REDIS_REST_URL && UPSTASH_REDIS_REST_TOKEN)
 const SESSION_KEY_PREFIX = "multidrive:sess:"
 
