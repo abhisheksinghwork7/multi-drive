@@ -17,6 +17,17 @@ const upload = multer({
   limits: { fileSize: MULTER_MAX_BYTES }
 })
 
+//Vercel serves the same app on several hostnames (per-deployment URLs, team aliases), but
+//Google OAuth and the session cookie only work on the one registered host. When
+//CANONICAL_HOST is set, send every other host there before anything else runs.
+const CANONICAL_HOST = String(process.env.CANONICAL_HOST || "").trim().toLowerCase()
+app.use((req, res, next) => {
+  if (!CANONICAL_HOST) return next()
+  const host = String(req.headers["x-forwarded-host"] || req.get("host") || "").split(",")[0].trim().toLowerCase()
+  if (!host || host === CANONICAL_HOST || host.startsWith("localhost") || host.startsWith("127.0.0.1")) return next()
+  return res.redirect(308, `https://${CANONICAL_HOST}${req.originalUrl}`)
+})
+
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
