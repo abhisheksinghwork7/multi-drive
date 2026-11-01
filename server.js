@@ -1107,8 +1107,11 @@ app.get("/auth/google", (req, res) => {
 app.post("/auth/google/start", async (req, res) => {
   try {
     cleanupOAuthStates(req.userSession)
-    const customClientId = getBodyTrimmed(req, "clientId")
-    const customClientSecret = getBodyTrimmed(req, "clientSecret")
+    //OAuth client IDs and secrets never contain whitespace; copying them from a wrapped
+    //line (common on phones/tablets) can insert a space or newline mid-value, which makes
+    //Google reject the client as "not found".
+    const customClientId = getBodyRaw(req, "clientId").replace(/\s+/g, "")
+    const customClientSecret = getBodyRaw(req, "clientSecret").replace(/\s+/g, "")
     if (!customClientId || !customClientSecret) {
       return res.status(400).json({ error: "Both Client ID and Client Secret are required." })
     }
